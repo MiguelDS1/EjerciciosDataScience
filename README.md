@@ -1,1 +1,1 @@
-# Pr-cticas-M-ster-Data-Science
+# Ejercicios-Data-Science
