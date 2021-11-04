@@ -1,0 +1,53 @@
+---
+title: "Práctica 2 - Modelos de distribución de probabilidad"
+author: "Máster en Data Science-Miguel Calvo Pérez"
+date: "31/10/2021"
+output: 
+  pdf_document:
+     latex_engine: xelatex
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Actividad 1
+
+• Realiza un histograma de todas las filas de la variable lifetime y comprueba que efectivamente nos
+interesa separar los datos.
+
+```{r echo=FALSE}
+graphics::hist(life, main="Histograma de vida media", xlab="Horas de vida", ylab="Frecuencia")
+```
+• Crea dos conjuntos de datos diferentes para los dos tipos de baterías, por ejemplo datosA y datosB.
+
+
+• Realiza ahora un histograma de cada uno de los tipos y comenta si te parece que los datos siguen una
+distribucion normal.
+
+```{r echo=FALSE}
+hist(datosA) #mejor por separado.
+plot(density(datosA),
+     ylab='Densidad', col='blue3', xlab='', las=1, lwd=4)
+```
+```{r echo=FALSE}
+hist(datosB)
+plot(density(datosB),
+     ylab='Densidad', col='green', xlab='x', las=1, lwd=4)
+```
+• Confirma tus conclusiones con alguna/s de las herramientas vistas en clase (test de normalidad, gráfico
+Quantil-Quantil, tests de normalidad,...)
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
