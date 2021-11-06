@@ -19,8 +19,7 @@ interesa separar los datos.
 ```{r echo=FALSE}
 graphics::hist(life, main="Histograma de vida media", xlab="Horas de vida", ylab="Frecuencia")
 ```
-• Crea dos conjuntos de datos diferentes para los dos tipos de baterías, por ejemplo datosA y datosB.
-
+Se observa una distribución que se asemeja a dos distribuciones conjuntas posiblemente normales. Por ello, al dividir los datos de la muestra en dos submuestras, siendo el valor límite $$183.6$$. 
 
 • Realiza ahora un histograma de cada uno de los tipos y comenta si te parece que los datos siguen una
 distribucion normal.
@@ -38,16 +37,17 @@ plot(density(datosB),
 • Confirma tus conclusiones con alguna/s de las herramientas vistas en clase (test de normalidad, gráfico
 Quantil-Quantil, tests de normalidad,...)
 
-```{r cars}
-summary(cars)
+```{r echo=FALSE}
+qqnorm(datosA, main = "Gráfica normalidad Q-Q de motores A", xlab ="Cuantiles teóricos" , ylab="Cuantiles de muestra")
 ```
 
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r echo=FALSE}
+qqnorm(datosB, main = "Gráfica normalidad Q-Q de motores B", xlab ="Cuantiles teóricos" , ylab="Cuantiles de muestra")
 ```
+Relativo a las pruebas de normalidad, aplicamos el test de normalidad de Shapiro-Wilk.
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+Al aplicar sobre los datos completos, tal y como se anticipaba en el histograma, no cumpliría la $$H_0$$ de normalidad, con un valor de $$W=0.82239, p < 0.001$$.  
+
+Relativo a los datos de las baterías A, se encuentra que se mantiene la $$H_0$$, ya que el valor es $$W=0.9848, p = 0.7632$$, asumiendo normalidad de la variable. 
+
+Sobre los datos de las baterías B, se encuentra que se mantiene la $$H_0$$, ya que el valor es $$W=0.98395, p = 0.7256$$, siendo también compatible con la distribución normal. 
