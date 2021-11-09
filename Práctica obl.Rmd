@@ -262,6 +262,6 @@ B_menos_175 / B_menos_175_weibull
 
 $$P[X<175]_{We}=0.003852956$$
 $$Ratio = \frac{P[X<175]}{P[X<175]_{We}}=\frac{0.01238792}{0.003852956} = 3.215173$$
-Relativo al nuevo proceso, la distribución Weibull muestra una probabilidad más de 3 veces inferior a la probabilidad de tener baterías defectuosas original.
+Relativo al nuevo proceso, la distribución Weibull muestra una probabilidad más de 3 veces inferior a la probabilidad de tener baterías defectuosas original, por lo que saldría rentable el nuevo proceso.
 
 
