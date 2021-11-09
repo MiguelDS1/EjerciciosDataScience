@@ -1,0 +1,266 @@
+---
+title: "Práctica 2 - Modelos de distribución de probabilidad"
+author: "Alejandro Perela Posada, Andrea Condado Gómez y Miguel Calvo Pérez"
+date: "9/11/2021"
+output: 
+    pdf_document:
+      latex_engine: xelatex
+---
+
+```{r message =FALSE, warning=FALSE}
+library(PASWR2); library(ggplot2);library(dplyr);library(scales);library(nortest)
+datos <- BATTERY
+```
+## Actividad 1
+
+• Realiza un histograma de todas las filas de la variable lifetime y comprueba que efectivamente nos
+interesa separar los datos.
+
+```{r echo=FALSE}
+ggplot(datos,aes(x=lifetime))+
+  geom_histogram(position="identity",alpha=0.5,binwidth=0.25)+
+  theme_bw()
+```
+• Crea dos conjuntos de datos diferentes para los dos tipos de baterías, por ejemplo datosA y datosB.
+
+```{r message =FALSE, warning=FALSE}
+datosA <- datos %>% filter(facility == "A")
+datosB <- datos %>% filter(facility == "B")
+```
+• Realiza ahora un histograma de cada uno de los tipos y comenta si te parece que los datos siguen una
+distribución normal.
+
+```{r echo=FALSE}
+ggplot(datos,aes(x=lifetime,group=facility,fill=facility))+
+  geom_histogram(position="identity",alpha=0.5,binwidth=0.25)+
+  theme_bw()
+```
+Se observan dos distribuciones que son compatibles con la distribución normal. 
+
+• Confirma tus conclusiones con alguna/s de las herramientas vistas en clase (test de normalidad, gráfico
+Quantil-Quantil, tests de normalidad,...)
+
+```{r echo=FALSE}
+hist(datosA$lifetime, main = expression("Histograma datos Lifetime para A"),
+     xlab = expression("Lifetime"),
+     col = "steelblue", 
+     border = "white", 
+     bg = "white", 
+     freq = FALSE)
+curve(dnorm(x, mean(datosA$lifetime), sd(datosA$lifetime)), 
+      add = TRUE, 
+      lwd = 2, 
+      lty = 2)
+```
+```{r echo=FALSE}
+hist(datosB$lifetime, main = expression("Histograma datos Lifetime para B"),
+     xlab = expression("Lifetime"),
+     col = "steelblue", 
+     border = "white", 
+     bg = "white", 
+     freq = FALSE)
+curve(dnorm(x, mean(datosB$lifetime), sd(datosB$lifetime)), 
+      add = TRUE, 
+      lwd = 2, 
+      lty = 2)
+```
+
+``` {r echo=FALSE}
+qqnorm(datosA$lifetime, pch = 20, main = "Gráfica Q-Q normal", col = alpha("red4", 0.5), las = 1)
+grid()
+qqline(datosA$lifetime, lwd = 2)
+```
+
+``` {r echo=FALSE}
+qqnorm(datosB$lifetime, pch = 20, main = "Gráfica Q-Q normal", col = alpha("red4", 0.5), las = 1)
+grid()
+qqline(datosB$lifetime, lwd = 2)
+```
+
+El método del Gráfico Q-Q también nos indica que ambas distribuciones siguen una distribución normal, dado que la distribución de la variable es muy similar a la distribución de comparación, siendo sobre todo en el centro
+una línea recta. 
+
+Comparando visulamente con una distribución normal que toma como inputs la media y desviación estándar de cada uno de los tipos de batería, parece que ambos tipos siguen una distribución normal.
+
+Al evaluar a través de pruebas de normalidad, se encuentra que con el test de Shapiro-Wilk se obtiene que $$W = 0.9848, p = 0.7632$$ en la muestra de baterías A y $$W = 0.9835, p = 0.7256$$ en la muestra de baterías B, concluyendo que mantenemos la hipótesis de normalidad en ambas muestras. Se concluye lo mismo al aplicar el test de normalidad de Anderson-Darling, obteniendo en la muestra de baterías A $$A = 0.35332, p= 0.4511$$
+y $$A = 0.19478, p= 0.8873$$ en la muestra de baterías B.
+
+## Actividad 2.
+
+Ahora que sabemos que nuestros datos siguen aproximadamente una distribución normal, tendríamos que
+estimar sus parámetros μ y σ. A partir de ahí, podemos realizar cálculo de probabilidades de la normal.
+
+• Realiza una estimación puntual de la media y la desviación típica de la población de cada tipo de
+baterías.
+
+```{r message =FALSE, warning=FALSE}
+lifetimeA = datosA$lifetime
+mean_lifetimeA = mean(lifetimeA)
+sd_lifetimeA = sd(lifetimeA)
+lifetimeB = datosB$lifetime
+mean_lifetimeB = mean(lifetimeB)
+sd_lifetimeB = sd(lifetimeB)
+```
+
+$$\overline{X}_A = 200.5087; \sigma_A = 2.745777$$
+$$\overline{X}_B = 179.6805; \sigma_B = 2.0849777$$
+
+• Calcula la probabilidad de que una batería tomada al azar del tipo A dure más de 210 horas.
+
+```{r message =FALSE, warning=FALSE}
+A_mas_210 = pnorm(q = 210, mean = mean_lifetimeA, sd = sd_lifetimeA, lower.tail = FALSE)
+```
+
+$$P[X>210]= 0.0002734129$$
+
+• Calcula la probabilidad de que una batería tomada al azar del tipo B dure menos de 175 horas.
+
+```{r message =FALSE, warning=FALSE}
+B_menos_175 = pnorm(q = 175, mean = mean_lifetimeB, sd = sd_lifetimeB, lower.tail = TRUE)
+```
+
+$$P[X<175]=0.01238792$$
+
+• Encuentra cuál es la duración máxima del 3% de las pilas del tipo B que duran menos (ayuda: esto es
+equivalente a encontrar el cuantil 0.03 de la distribución)
+
+```{r message =FALSE, warning=FALSE}
+qnorm(p = .03,
+      mean = mean_lifetimeB,
+      sd = sd_lifetimeB,
+      lower.tail = TRUE,
+      log.p = FALSE)
+```
+
+$$p_{0.03}=175.7591$$
+
+## Actividad 3
+
+Vamos a centrarnos ahora en las baterías de tipo B. Supongamos que una duración por debajo de 175 horas
+no es aceptable para el usuario de la batería. En la actividad anterior hemos calculado la probabilidad p que esto suceda. Entonces, si tomamos una batería del tipo B al azar y comprobamos si dura menos de 175 de
+horas, estamos realizando un experimento de Bernoulli con probabilidad p.
+
+• Calcula la probabilidad de que en un lote de 10 baterías, no haya ninguna defectuosa (ayuda: distribución
+binomial).
+
+```{r message =FALSE, warning=FALSE}
+pbinom(q = 0, size = 10, prob = B_menos_175)
+```
+
+$$P[X=0]=0.8828033$$
+
+• Imagina que las baterías se fabrican en serie e independientemente. ¿Cuál es la probabilidad de que la
+batería producida en quinto lugar sea la primera defectuosa? (ayuda: distribución geométrica.)
+
+```{r message =FALSE, warning=FALSE}
+dgeom(5, prob = B_menos_175)
+```
+
+$$X\sim Ge(P[X<175])$$
+$$P(X = 5) = 0.01163939$$
+• Supongamos que en una caja de 20 baterías van 3 defectuosas. ¿Cuál es la probabilidad de que al
+tomar una muestra sin reposición de 5 baterías al menos una sea defectuosa? (ayuda: distribución
+hipergeométrica)
+
+```{r message =FALSE, warning=FALSE}
+1- dhyper(x = 1, m = 3, k = 5, n = 20-3)
+```
+
+$$X\sim HG(20;3;5)$$
+$$P(X=1)= 0.5394737$$
+## Actividad 4.
+
+Seguimos con las baterías de tipo B, pero en vez de hacer experimentos de Bernoulli queremos estudiar el
+número de baterías defectuosas fabricadas cada día. Supongamos que se fabrican 1000 baterías cada día.
+Entonces, cada día en promedio se estarán produciendo aproximadamente 1000 × p baterías, y el número de
+baterías defectuosas por día sigue una distribución de Poisson. Tomemos 12 como ese promedio de baterías
+defectuosas cada día. (ayuda: repasa qué modelo de distribución modeliza estos recuentos de eventos raros
+con una tasa media por unidad de tiempo)
+
+• ¿Cuál es la probabilidad de que un día se produzcan más de 20 baterías defectuosas?
+
+```{r message =FALSE, warning=FALSE}
+ppois(q = 20, lambda = 12, lower.tail = FALSE)
+``` 
+
+$$X\sim Poiss(12)$$
+
+$$P[X > 20] = 1 - P[X \leq 20] = 0.01159774$$
+• ¿Cuál es la probabilidad de que un día no salga ninguna batería defectuosa de la fábrica?
+
+```{r message =FALSE, warning=FALSE}
+ppois(q = 0, lambda = 12)
+dpois(0, lambda=12)
+``` 
+
+
+$$P[X = 0] = 6.144212·10^{-6}$$
+• La fábrica funciona de lunes a viernes. ¿Qué distribución sigue el número de baterías defectuosas por
+semana? Justifica qué propiedad se aplica.
+
+Sigue también una distribución de Poisson. La distribución Poisson tiene la propiedad aditiva o reproductiva que implica que la suma de variables aleatorias independientes con distribución Poisson de parámetro λi también tiene una distribución Poisson de parámetro λ (suma de los diferente parámetros λ= λ1+ λ2+...+ λk).
+
+Fuente: https://www.cartagena99.com/recursos/alumnos/apuntes/2014%20-T1%20GradoADE_EstadisticaEmpresarialII_Tema1__Resumen_v1.pdf
+
+
+## Actividad 5
+El departamento de I+D de la empresa que fabrica las baterías tipo B está investigando nuevos materiales y
+métodos para mejorar la vida útil de las baterías. En particular, quieren llegar a diseñar una batería cuya
+duración siga una distribución de Weibull con parámetros a = 100 y b = 185.
+
+• Realiza una simulación de la producción semanal de baterías (recuerda: 5 días de produccción, a 1000
+baterías por día). Guarda los datos en un vector.
+
+
+```{r echo=FALSE}
+curve(dweibull(x, 100, 185), 
+      from = 170, 
+      to = 195, 
+      n = 5000, 
+      lwd = 2, 
+      main = "Distribución Weibull a = 100 y b = 185")
+legend(x = 192, y = .2, c("a = 100", "b = 185"))
+```
+
+```{r message =FALSE, warning=FALSE}
+weibull_vector = curve(dweibull(x, 100, 185), 
+                       from = 170, 
+                       to = 195, 
+                       n = 5000, 
+                       lwd = 2, 
+                       main = "Distribución Weibull a = 100 y b = 185")
+```                       
+
+• Con este nuevo proceso, ¿se mejora realmente la duración media de las baterías?
+(ayuda: puedes usar los datos simulados o la expresión de la esperanza de una Weibull)
+
+
+$$\overline{X}_B = 179.6805$$
+
+$$X\sim We(100, 185)$$
+
+$$\overline{X}_{WeB} = 183.9177$$
+
+```{r message =FALSE, warning=FALSE}
+esp_weibull = mean(rweibull(5000, shape = 100, scale = 185))
+```
+
+Efectivamente hay diferencia entre la media de los datos y la esperanza de la distribución Weibull, aunque no se detecta inicialmente unas diferenecias destacables.
+
+• Los ingenieros no lo tienen muy claro (parece que la diferencia no es tanta en promedio y los nuevos
+materiales son costosos). Para demostrarles que merece la pena, calcula la proporción de baterías
+defectuosas que producirá probablemente el nuevo proceso y compárala con el anterior (la p que
+calculamos en la actividad 2)
+
+$$P[X<175]=0.01238792$$
+```{r message =FALSE, warning=FALSE}
+B_menos_175_weibull = pweibull(175, 100, scale = 185)
+B_menos_175 / B_menos_175_weibull
+```
+
+$$P[X<175]_{We}=0.003852956$$
+$$Ratio = \frac{P[X<175]}{P[X<175]_{We}}=\frac{0.01238792}{0.003852956} = 3.215173$$
+Relativo al nuevo proceso, la distribución Weibull muestra una probabilidad más de 3 veces inferior a la probabilidad de tener baterías defectuosas original.
+
+
+
