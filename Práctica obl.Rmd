@@ -1,5 +1,5 @@
 ---
-title: "Práctica obligatoria de probabilidad"
+title: "Práctica 2 - Modelos de distribución de probabilidad"
 author: "Alejandro Perela Posada, Andrea Condado Gómez y Miguel Calvo Pérez"
 date: "9/11/2021"
 output: 
@@ -179,7 +179,89 @@ Entonces, cada día en promedio se estarán produciendo aproximadamente 1000 × 
 baterías defectuosas por día sigue una distribución de Poisson. Tomemos 12 como ese promedio de baterías
 defectuosas cada día. (ayuda: repasa qué modelo de distribución modeliza estos recuentos de eventos raros
 con una tasa media por unidad de tiempo)
+
 • ¿Cuál es la probabilidad de que un día se produzcan más de 20 baterías defectuosas?
+
+```{r message =FALSE, warning=FALSE}
+ppois(q = 20, lambda = 12, lower.tail = FALSE)
+``` 
+
+$$X\sim Poiss(12)$$
+
+$$P[X > 20] = 1 - P[X \leq 20] = 0.01159774$$
 • ¿Cuál es la probabilidad de que un día no salga ninguna batería defectuosa de la fábrica?
+
+```{r message =FALSE, warning=FALSE}
+ppois(q = 0, lambda = 12)
+``` 
+
+
+$$P[X = 0] = 6.144212·10^{-6}$$
 • La fábrica funciona de lunes a viernes. ¿Qué distribución sigue el número de baterías defectuosas por
 semana? Justifica qué propiedad se aplica.
+
+Sigue también una distribución de Poisson. La distribución Poisson tiene la propiedad aditiva o reproductiva que implica que la suma de variables aleatorias independientes con distribución Poisson de parámetro λi también tiene una distribución Poisson de parámetro λ (suma de los diferente parámetros λ= λ1+ λ2+...+ λk).
+
+Fuente: https://www.cartagena99.com/recursos/alumnos/apuntes/2014%20-T1%20GradoADE_EstadisticaEmpresarialII_Tema1__Resumen_v1.pdf
+
+
+## Actividad 5
+El departamento de I+D de la empresa que fabrica las baterías tipo B está investigando nuevos materiales y
+métodos para mejorar la vida útil de las baterías. En particular, quieren llegar a diseñar una batería cuya
+duración siga una distribución de Weibull con parámetros a = 100 y b = 185.
+
+• Realiza una simulación de la producción semanal de baterías (recuerda: 5 días de produccción, a 1000
+baterías por día). Guarda los datos en un vector.
+
+
+```{r echo=FALSE}
+curve(dweibull(x, 100, 185), 
+      from = 170, 
+      to = 195, 
+      n = 5000, 
+      lwd = 2, 
+      main = "Distribución Weibull a = 100 y b = 185")
+legend(x = 192, y = .2, c("a = 100", "b = 185"))
+```
+
+```{r message =FALSE, warning=FALSE}
+weibull_vector = curve(dweibull(x, 100, 185), 
+                       from = 170, 
+                       to = 195, 
+                       n = 5000, 
+                       lwd = 2, 
+                       main = "Distribución Weibull a = 100 y b = 185")
+```                       
+
+• Con este nuevo proceso, ¿se mejora realmente la duración media de las baterías?
+(ayuda: puedes usar los datos simulados o la expresión de la esperanza de una Weibull)
+
+
+$$\overline{X}_B = 179.6805$$
+
+$$X\sim We(100, 185)$$
+
+$$\overline{X}_{WeB} = 183.9177$$
+
+```{r message =FALSE, warning=FALSE}
+esp_weibull = mean(rweibull(5000, shape = 100, scale = 185))
+```
+
+Efectivamente hay diferencia entre la media de los datos y la esperanza de la distribución Weibull, aunque no se detecta inicialmente unas diferenecias destacables.
+
+• Los ingenieros no lo tienen muy claro (parece que la diferencia no es tanta en promedio y los nuevos
+materiales son costosos). Para demostrarles que merece la pena, calcula la proporción de baterías
+defectuosas que producirá probablemente el nuevo proceso y compárala con el anterior (la p que
+calculamos en la actividad 2)
+
+$$P[X<175]=0.01238792$$
+```{r message =FALSE, warning=FALSE}
+B_menos_175_weibull = pweibull(175, 100, scale = 185)
+B_menos_175 / B_menos_175_weibull
+```
+
+$$P[X<175]_{We}=0.003852956$$
+$$Ratio = \frac{P[X<175]}{P[X<175]_{We}}=\frac{0.01238792}{0.003852956} = 3.215173$$
+Relativo al nuevo proceso, la distribución Weibull muestra una probabilidad más de 3 veces inferior a la probabilidad de tener baterías defectuosas original.
+
+
