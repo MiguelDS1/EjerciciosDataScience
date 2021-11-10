@@ -167,7 +167,7 @@ hipergeométrica)
 ```
 
 $$X\sim HG(20;3;5)$$
-$$P(X=1)= 0.5394737$$
+$$P(X\geq 1)= 0.5394737$$
 ## Actividad 4.
 
 Seguimos con las baterías de tipo B, pero en vez de hacer experimentos de Bernoulli queremos estudiar el
